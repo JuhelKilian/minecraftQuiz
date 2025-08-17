@@ -16,33 +16,33 @@ class User extends Authenticatable
      *
      * @var array<int, string>
      */
-	protected $table = 'users';
+    protected $table = 'users';
 
-	protected $casts = [
-		'email_verified_at' => 'datetime',
-		'nbJoursTravailles' => 'int',
-		'nbLeconsRealisees' => 'int'
-	];
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'nbJoursTravailles' => 'int',
+        'nbLeconsRealisees' => 'int'
+    ];
 
-	protected $hidden = [
-		'password',
-		'remember_token'
-	];
+    protected $hidden = [
+        'password',
+        'remember_token'
+    ];
 
-	protected $fillable = [
-		'name',
-		'email',
-		'email_verified_at',
-		'password',
-		'remember_token',
-		'nomFamille',
-		'langue',
-		'nbJoursTravailles',
-		'nbLeconsRealisees'
-	];
+    protected $fillable = [
+        'name',
+        'email',
+        'email_verified_at',
+        'password',
+        'remember_token',
+        'nomFamille',
+        'langue',
+        'nbJoursTravailles',
+        'nbLeconsRealisees'
+    ];
 
-	public function connaissances()
-	{
-		return $this->hasMany(Connaissance::class, 'idCompte');
-	}
+    public function connaissances()
+    {
+        return $this->hasMany(Connaissance::class, 'idCompte');
+    }
 }

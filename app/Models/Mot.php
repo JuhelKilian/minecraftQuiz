@@ -6,19 +6,47 @@
 
 namespace App\Models;
 
-use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class Mot
  * 
  * @property int $id
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
+ * @property string $name_en
+ * @property string $name_fr
+ * @property string $name_it
+ * @property string $cheminImg
+ * @property int $difficulte
+ * 
+ * @property Collection|Connaissance[] $connaissances
  *
  * @package App\Models
  */
 class Mot extends Model
 {
-	protected $table = 'mots';
+	protected $table = 'mot';
+	public $timestamps = false;
+
+	protected $casts = [
+		'difficulte' => 'int'
+	];
+
+	protected $fillable = [
+		'name_en',
+		'name_fr',
+		'name_it',
+		'cheminImg',
+		'difficulte'
+	];
+
+	public function difficulte()
+	{
+		return $this->belongsTo(Difficulte::class, 'difficulte');
+	}
+
+	public function connaissances()
+	{
+		return $this->hasMany(Connaissance::class, 'idMot');
+	}
 }
