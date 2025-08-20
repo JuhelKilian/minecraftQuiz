@@ -16,7 +16,7 @@
         <!-- En-tête avec titre et contrôles -->
         <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
             <div class="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4">
-                <h1 class="text-3xl font-bold text-gray-800">{{ $titreVocab }}</h1>
+                <h1 class="text-3xl font-bold text-gray-800" data-translate="vocabulary_title">{{ $titreVocab }}</h1>
 
                 <!-- Contrôles de recherche et filtres -->
                 <div class="flex flex-col sm:flex-row gap-3">
@@ -28,13 +28,15 @@
                                    name="search"
                                    value="{{ request('search') }}"
                                    placeholder="{{ $placeholderSearch }}"
+                                   data-translate="search_placeholder"
                                    class="px-4 py-2 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent w-full sm:w-64">
                         </form>
                         <button type="button"
                                 id="globalSearchBtn"
                                 onclick="globalSearch()"
                                 class="absolute inset-y-0 right-0 pr-3 flex items-center hover:bg-gray-100 rounded-r-lg transition-colors duration-200 cursor-pointer group"
-                                title="{{ $tooltipSearch }}">
+                                title="{{ $tooltipSearch }}"
+                                data-translate="search_tooltip">
                             <svg class="h-5 w-5 text-gray-400 group-hover:text-blue-500 transition-colors duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                             </svg>
@@ -50,10 +52,10 @@
 
                     <!-- Filtre par difficulté -->
                     <select id="difficultyFilter" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                        <option value="">{{ $toutesD }}</option>
-                        <option value="1">{{ $facile }}</option>
-                        <option value="2">{{ $normal }}</option>
-                        <option value="3">{{ $difficile }}</option>
+                        <option value="" data-translate="all_difficulties">{{ $toutesD }}</option>
+                        <option value="1" data-translate="easy">{{ $facile }}</option>
+                        <option value="2" data-translate="normal">{{ $normal }}</option>
+                        <option value="3" data-translate="hard">{{ $difficile }}</option>
                     </select>
                 </div>
             </div>
@@ -135,21 +137,33 @@
 
                         <!-- Traduction dans la langue de la page -->
                         <p class="text-gray-600 font-medium mb-3">
-                            {{ $mot->{'name_' . session('langage', 'fr')} }}
+                            @switch(session('language', 'fr_fr'))
+                                @case('fr_fr')
+                                    {{ $mot->name_fr }}
+                                    @break
+                                @case('en_us')
+                                    {{ $mot->name_en }}
+                                    @break
+                                @case('it_it')
+                                    {{ $mot->name_it }}
+                                    @break
+                                @default
+                                    {{ $mot->name_fr }}
+                            @endswitch
                         </p>
 
                         <!-- Indicateur de difficulté -->
                         <div class="flex items-center justify-between">
                             <div class="flex items-center">
-                            <span class="text-sm text-gray-500 mr-2">
-                                @if(session('langage') == 'fr')
+                            <span class="text-sm text-gray-500 mr-2" data-translate="difficulty">
+                            @if(session('langage') == 'fr')
                                     Difficulté:
                                 @elseif(session('langage') == 'en')
                                     Difficulty:
                                 @elseif(session('langage') == 'it')
                                     Difficoltà:
                                 @endif
-                            </span>
+                                </span>
                                 <div class="flex">
                                     @for($i = 1; $i <= 3; $i++)
                                         <div class="w-3 h-3 rounded-full mr-1
@@ -214,7 +228,7 @@
         <!-- Message si aucun résultat -->
         <div id="noResults" class="hidden text-center py-12">
             <div class="text-gray-400 text-6xl mb-4">📚</div>
-            <h3 class="text-xl font-semibold text-gray-600 mb-2">
+            <h3 class="text-xl font-semibold text-gray-600 mb-2" data-translate="no_words_found">
                 @if(session('langage') == 'fr')
                     Aucun mot trouvé
                 @elseif(session('langage') == 'en')
@@ -223,7 +237,7 @@
                     Nessuna parola trovata
                 @endif
             </h3>
-            <p class="text-gray-500">
+            <p class="text-gray-500" data-translate="try_adjusting">
                 @if(session('langage') == 'fr')
                     Essayez de modifier vos critères de recherche
                 @elseif(session('langage') == 'en')
@@ -406,6 +420,227 @@
             // Stocker le nombre original pour la recherche locale
             document.getElementById('resultsCount').setAttribute('data-original', '{{ $mots->total() }}');
         });
+
+            // Séparation
+
+
+        const vocabularyTranslations = {
+            fr: {
+                'vocabulary_title': 'Vocabulaire',
+                'search_placeholder': 'Rechercher un mot...',
+                'search_tooltip': 'Rechercher dans tous les mots',
+                'all_difficulties': 'Toutes les difficultés',
+                'easy': 'Facile',
+                'normal': 'Normal',
+                'hard': 'Difficile',
+                'difficulty': 'Difficulté:',
+                'words_total': 'mot(s) au total',
+                'words_for': 'pour',
+                'page_of': 'Page {current} sur {total}',
+                'no_words_found': 'Aucun mot trouvé',
+                'try_adjusting': 'Essayez de modifier vos critères de recherche'
+            },
+            en: {
+                'vocabulary_title': 'Vocabulary',
+                'search_placeholder': 'Search for a word...',
+                'search_tooltip': 'Search in all words',
+                'all_difficulties': 'All difficulties',
+                'easy': 'Easy',
+                'normal': 'Normal',
+                'hard': 'Hard',
+                'difficulty': 'Difficulty:',
+                'words_total': 'word(s) total',
+                'words_for': 'for',
+                'page_of': 'Page {current} of {total}',
+                'no_words_found': 'No words found',
+                'try_adjusting': 'Try adjusting your search criteria'
+            },
+            it: {
+                'vocabulary_title': 'Vocabolario',
+                'search_placeholder': 'Cerca una parola...',
+                'search_tooltip': 'Cerca in tutte le parole',
+                'all_difficulties': 'Tutte le difficoltà',
+                'easy': 'Facile',
+                'normal': 'Normale',
+                'hard': 'Difficile',
+                'difficulty': 'Difficoltà:',
+                'words_total': 'parola/e in totale',
+                'words_for': 'per',
+                'page_of': 'Pagina {current} di {total}',
+                'no_words_found': 'Nessuna parola trovata',
+                'try_adjusting': 'Prova a modificare i criteri di ricerca'
+            }
+        };
+
+        // Fonction pour mettre à jour les traductions de la page vocabulaire
+        function updateVocabularyTranslations(lang) {
+            const currentTranslations = vocabularyTranslations[lang] || vocabularyTranslations.fr;
+
+            // Titre principal - chercher spécifiquement le titre avec l'attribut data-translate
+            const titleElement = document.querySelector('h1[data-translate="vocabulary_title"]') || document.querySelector('h1');
+            if (titleElement) {
+                titleElement.textContent = currentTranslations['vocabulary_title'];
+            }
+
+            // Placeholder de recherche
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.placeholder = currentTranslations['search_placeholder'];
+            }
+
+            // Tooltip de recherche
+            const searchBtn = document.getElementById('globalSearchBtn');
+            if (searchBtn) {
+                searchBtn.title = currentTranslations['search_tooltip'];
+            }
+
+            // Options de difficulté
+            const difficultyFilter = document.getElementById('difficultyFilter');
+            if (difficultyFilter) {
+                const options = difficultyFilter.options;
+                if (options[0]) options[0].textContent = currentTranslations['all_difficulties'];
+                if (options[1]) options[1].textContent = currentTranslations['easy'];
+                if (options[2]) options[2].textContent = currentTranslations['normal'];
+                if (options[3]) options[3].textContent = currentTranslations['hard'];
+            }
+
+            // Labels de difficulté dans les cartes
+            document.querySelectorAll('.vocabulary-card').forEach(card => {
+                // Label "Difficulté:" ou "Difficulty:" ou "Difficoltà:"
+                const difficultyLabel = card.querySelector('span[data-translate="difficulty"]');
+                if (difficultyLabel) {
+                    difficultyLabel.textContent = currentTranslations['difficulty'];
+                }
+
+                // Badges de difficulté - chercher par classe et position
+                const difficultyBadge = card.querySelector('span.px-2.py-1.text-xs.rounded-full.font-medium');
+                if (difficultyBadge && card.dataset.difficulty) {
+                    const difficulty = parseInt(card.dataset.difficulty);
+                    if (difficulty === 1) {
+                        difficultyBadge.textContent = currentTranslations['easy'];
+                    } else if (difficulty === 2) {
+                        difficultyBadge.textContent = currentTranslations['normal'];
+                    } else if (difficulty === 3) {
+                        difficultyBadge.textContent = currentTranslations['hard'];
+                    }
+                }
+            });
+
+            // Message "aucun résultat"
+            const noResultsTitle = document.querySelector('#noResults h3');
+            const noResultsText = document.querySelector('#noResults p');
+            if (noResultsTitle) {
+                noResultsTitle.textContent = currentTranslations['no_words_found'];
+            }
+            if (noResultsText) {
+                noResultsText.textContent = currentTranslations['try_adjusting'];
+            }
+
+            // Compteur de résultats - mettre à jour seulement le texte, pas le nombre
+            updateResultsCounter(lang);
+
+            // Pagination - mettre à jour seulement le texte, pas les numéros
+            updatePaginationText(lang);
+        }
+
+        // Fonction pour mettre à jour le compteur de résultats
+        function updateResultsCounter(lang) {
+            const currentTranslations = vocabularyTranslations[lang] || vocabularyTranslations.fr;
+            const resultsContainer = document.querySelector('.mt-4.flex.flex-col div:first-child');
+
+            if (resultsContainer) {
+                const resultsCountElement = document.getElementById('resultsCount');
+                const searchTerm = new URLSearchParams(window.location.search).get('search');
+
+                if (resultsCountElement) {
+                    const count = resultsCountElement.textContent;
+                    let newText = `${count} ${currentTranslations['words_total']}`;
+
+                    if (searchTerm) {
+                        newText += ` ${currentTranslations['words_for']} "${searchTerm}"`;
+                    }
+
+                    // Remplacer tout le contenu en gardant le nombre
+                    const textNodes = Array.from(resultsContainer.childNodes).filter(node => node.nodeType === 3);
+                    textNodes.forEach(node => {
+                        if (node.textContent.includes('mot') || node.textContent.includes('word') || node.textContent.includes('parola')) {
+                            resultsContainer.removeChild(node);
+                        }
+                    });
+
+                    // Ajouter le nouveau texte
+                    const textAfterCount = document.createTextNode(` ${currentTranslations['words_total']}`);
+                    resultsCountElement.parentNode.insertBefore(textAfterCount, resultsCountElement.nextSibling);
+
+                    if (searchTerm) {
+                        const searchText = document.createTextNode(` ${currentTranslations['words_for']} "${searchTerm}"`);
+                        textAfterCount.parentNode.insertBefore(searchText, textAfterCount.nextSibling);
+                    }
+                }
+            }
+        }
+
+        // Fonction pour mettre à jour le texte de pagination
+        function updatePaginationText(lang) {
+            const currentTranslations = vocabularyTranslations[lang] || vocabularyTranslations.fr;
+            const paginationInfo = document.querySelector('.mt-4.flex.flex-col div:last-child');
+
+            if (paginationInfo) {
+                const text = paginationInfo.textContent;
+                // Extraire les numéros avec une regex
+                const match = text.match(/(\d+).*(\d+)/);
+                if (match) {
+                    const [, current, total] = match;
+                    const newText = currentTranslations['page_of']
+                        .replace('{current}', current)
+                        .replace('{total}', total);
+                    paginationInfo.textContent = newText;
+                }
+            }
+        }
+
+        // Écouter les changements de langue depuis la navigation
+        document.addEventListener('DOMContentLoaded', function() {
+            // Fonction pour détecter les changements de langue
+            function handleLanguageChange() {
+                // Obtenir la langue actuelle depuis la session Laravel
+                let currentLanguage = @json(session('language', 'fr_fr'));
+
+                const sessionToJsLang = {
+                    'fr_fr': 'fr',
+                    'en_us': 'en',
+                    'it_it': 'it'
+                };
+
+                const currentLang = sessionToJsLang[currentLanguage] || 'fr';
+
+                // Appliquer les traductions
+                updateVocabularyTranslations(currentLang);
+            }
+
+            // Appliquer les traductions initiales
+            handleLanguageChange();
+
+            // Observer les changements dans le localStorage pour détecter les changements de langue
+            let lastLang = localStorage.getItem('preferredLanguage');
+            setInterval(() => {
+                const currentLang = localStorage.getItem('preferredLanguage');
+                if (currentLang && currentLang !== lastLang) {
+                    lastLang = currentLang;
+                    updateVocabularyTranslations(currentLang);
+                }
+            }, 100);
+
+            // Alternative : écouter l'événement storage (fonctionne entre onglets)
+            window.addEventListener('storage', function(e) {
+                if (e.key === 'preferredLanguage' && e.newValue) {
+                    updateVocabularyTranslations(e.newValue);
+                }
+            });
+        });
+
+        // Rendre la fonction disponible globalement si nécessaire
+        window.updateVocabularyTranslations = updateVocabularyTranslations;
     </script>
 
     <style>
@@ -484,4 +719,6 @@
             @apply text-gray-300 cursor-not-allowed hover:bg-white hover:text-gray-300;
         }
     </style>
+
+
 @endsection

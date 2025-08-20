@@ -275,9 +275,56 @@
     }
 
     // Fonction pour changer de langue
+
+    function updateCardTranslations(lang) {
+        // Mapping des langues
+        const langMap = {
+            'fr': 'fr',
+            'en': 'en',
+            'it': 'it'
+        };
+
+        const targetLang = langMap[lang] || 'fr';
+
+        // Mettre à jour les cartes
+        document.querySelectorAll('.vocabulary-card').forEach(card => {
+            // Mettre à jour le nom principal (dans la langue d'apprentissage)
+            const learningWord = card.querySelector('.learning-word');
+            const currentLearningLang = document.getElementById('learningLanguage').value;
+
+            // Mettre à jour la traduction (dans la langue de la page)
+            const translationP = card.querySelector('p.text-gray-600.font-medium.mb-3');
+            if (translationP) {
+                const nameEn = card.dataset.nameEn;
+                const nameFr = card.dataset.nameFr;
+                const nameIt = card.dataset.nameIt;
+
+                if (targetLang === 'en' && nameEn) {
+                    // Capitaliser la première lettre
+                    translationP.textContent = nameEn.charAt(0).toUpperCase() + nameEn.slice(1);
+                } else if (targetLang === 'it' && nameIt) {
+                    translationP.textContent = nameIt.charAt(0).toUpperCase() + nameIt.slice(1);
+                } else if (nameFr) {
+                    translationP.textContent = nameFr.charAt(0).toUpperCase() + nameFr.slice(1);
+                }
+            }
+        });
+    }
+
+    // Modifiez votre fonction changeLanguage pour inclure la mise à jour des cartes
     function changeLanguage(lang) {
-        // Mettre à jour les traductions
+        // Mettre à jour les traductions générales
         updateTranslations(lang);
+
+        // Mettre à jour les traductions de la page vocabulaire si elle existe
+        if (typeof updateVocabularyTranslations === 'function') {
+            updateVocabularyTranslations(lang);
+        }
+
+        // Mettre à jour les cartes si on est sur la page vocabulaire
+        if (typeof updateCardTranslations === 'function') {
+            updateCardTranslations(lang);
+        }
 
         // Mettre à jour l'affichage du sélecteur
         const flags = { fr: '🇫🇷', en: '🇬🇧', it: '🇮🇹' };
@@ -308,6 +355,9 @@
             console.error('Erreur lors de la mise à jour de la langue:', error);
         });
     }
+
+    // Rendre la fonction disponible globalement
+    window.updateCardTranslations = updateCardTranslations;
 
 
     // Initialisation au chargement de la page
